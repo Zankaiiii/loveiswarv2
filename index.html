@@ -3,351 +3,1101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love is War | Eternal Battlefield</title>
+<title>Love is War</title>
 <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; cursor: crosshair; }
+* { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --ink:#0a0610; --rose:#e8305a; --pink:#f07090; --blush:#f8aec0;
-  --fog:#6b4f88; --cream:#f0e8ff; --stone:#2a1f3d;
+  --ink:#0a0610; --deep:#12091e; --mid:#1e1030;
+  --stone:#2a1f3d; --dust:#3d2d55; --fog:#6b4f88;
+  --pale:#c8b8e0; --cream:#f0e8ff; --white:#fafafa;
+  --rose:#e8305a; --pink:#f07090; --blush:#f8aec0;
+  --gold:#d4a030; --amber:#e8b840;
 }
-html, body { width:100%; height:100%; overflow:hidden; background:var(--ink); color: var(--cream); font-family:'IM Fell English', serif; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--ink); }
+body { display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'IM Fell English', serif; }
 
-/* Cinematic Vignette */
-body::after {
-    content: ""; position: fixed; inset: 0;
-    background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
-    pointer-events: none; z-index: 55;
-}
-
+/* ---- TITLE SCREEN ---- */
 #title-screen {
-  position:fixed; inset:0; z-index:100; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; background:var(--ink); transition: opacity 1.5s ease;
+  position:fixed; inset:0; z-index:100;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--ink);
+  transition: opacity 1.2s ease;
 }
 #title-screen.fade-out { opacity:0; pointer-events:none; }
 
+.title-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 60%, rgba(232,48,90,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(30,16,48,1) 0%, transparent 60%);
+}
+
+.title-ruins {
+  position:absolute; bottom:0; left:0; right:0; height:45%;
+  background: linear-gradient(to top, #0a0610 0%, #120920 40%, transparent 100%);
+}
+
 .game-title {
-  font-family:'Uncial Antiqua', serif; font-size: clamp(3rem, 10vw, 6rem);
-  color: var(--cream); text-shadow: 0 0 30px var(--rose); 
-  margin-bottom: 10px;
+  font-family:'Uncial Antiqua', serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  color: var(--cream);
+  letter-spacing: 0.05em;
+  text-align: center;
+  position: relative;
+  z-index:2;
+  text-shadow:
+    0 0 60px rgba(232,48,90,0.6),
+    0 0 120px rgba(232,48,90,0.3),
+    0 2px 4px rgba(0,0,0,0.8);
+  animation: titlePulse 4s ease-in-out infinite;
 }
-
-.sub-title {
-    color:var(--fog); letter-spacing:8px; font-size: 0.9rem; margin-bottom:40px;
-    font-style: italic; opacity: 0.8;
+@keyframes titlePulse {
+  0%,100%{ text-shadow:0 0 60px rgba(232,48,90,0.6),0 0 120px rgba(232,48,90,0.3),0 2px 4px rgba(0,0,0,0.8); }
+  50%{ text-shadow:0 0 80px rgba(232,48,90,0.9),0 0 160px rgba(232,48,90,0.5),0 2px 4px rgba(0,0,0,0.8); }
 }
+.title-sub {
+  font-style:italic; color:var(--fog); font-size:1.1rem;
+  letter-spacing:0.3em; margin-top:12px; position:relative; z-index:2;
+  text-transform:uppercase;
+}
+.title-names {
+  margin-top:32px; position:relative; z-index:2;
+  display:flex; gap:60px; align-items:center;
+}
+.name-card {
+  text-align:center; padding:16px 24px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  backdrop-filter:blur(4px);
+}
+.name-card .abbr { font-family:'Uncial Antiqua',serif; font-size:1.4rem; letter-spacing:0.1em; }
+.name-card .full { font-style:italic; font-size:0.72rem; color:var(--fog); margin-top:4px; line-height:1.6; letter-spacing:0.05em; }
+.name-card.arnob .abbr { color:var(--rose); }
+.name-card.tasmim .abbr { color:var(--blush); }
+.vs-text { font-family:'Uncial Antiqua',serif; font-size:1.8rem; color:var(--dust); }
 
-#game-wrap { position:fixed; inset:0; opacity:0; transition:opacity 1s; }
-#game-wrap.visible { opacity:1; }
+#music-status { font-style:italic; color:var(--fog); font-size:0.72rem; margin-top:10px; position:relative; z-index:2; letter-spacing:0.1em; }
 
-/* HUD Styling */
+.begin-btn {
+  margin-top:20px; position:relative; z-index:2;
+  background:transparent; border:1px solid rgba(232,48,90,0.5);
+  color:var(--cream); padding:12px 48px;
+  font-family:'Uncial Antiqua',serif; font-size:1.1rem;
+  letter-spacing:0.2em; cursor:pointer;
+  transition:all 0.3s;
+  box-shadow: 0 0 20px rgba(232,48,90,0.2);
+}
+.begin-btn:hover {
+  background:rgba(232,48,90,0.12); border-color:var(--rose);
+  box-shadow:0 0 40px rgba(232,48,90,0.5);
+  transform:translateY(-2px);
+}
+.begin-btn:active { transform:translateY(0); }
+
+/* ---- GAME WRAPPER ---- */
+#game-wrap {
+  position:fixed; inset:0; opacity:0; transition:opacity 1s ease;
+  pointer-events:none;
+}
+#game-wrap.visible { opacity:1; pointer-events:all; }
+
+/* ---- HUD ---- */
 #hud {
-    position:absolute; top:0; left:0; right:0; padding:30px;
-    display:flex; justify-content:space-between; z-index:50; pointer-events:none;
+  position:absolute; top:0; left:0; right:0; z-index:50;
+  padding:14px 20px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+  pointer-events:none;
+  background:linear-gradient(to bottom, rgba(10,6,16,0.8) 0%, transparent 100%);
 }
-.hp-container { filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
-.hp-bar { height:12px; width:220px; background:rgba(20, 10, 30, 0.8); border:1px solid rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; position: relative; }
-.hp-fill { height:100%; width:100%; transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+.hud-panel { display:flex; flex-direction:column; gap:4px; }
+.hud-abbr { font-family:'Uncial Antiqua',serif; font-size:1rem; letter-spacing:0.08em; }
+.hud-fullname { font-style:italic; font-size:0.62rem; opacity:0.55; letter-spacing:0.04em; line-height:1.4; max-width:260px; }
+.hud-hp-row { display:flex; align-items:center; gap:8px; margin-top:2px; }
+.hud-hp-label { font-size:0.65rem; opacity:0.5; letter-spacing:0.1em; }
+.hp-track { height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; border:1px solid rgba(255,255,255,0.06); }
+.hp-fill { height:100%; border-radius:3px; transition:width 0.15s ease; }
+#arnob-hp-fill { width:100%; background:linear-gradient(90deg,var(--rose),#ff5080); width:100px; }
+#tasmim-hp-fill { width:100%; background:linear-gradient(90deg,var(--blush),#e080b0); }
+.hud-panel.right { align-items:flex-end; }
+.hud-panel.right .hud-fullname { text-align:right; }
+#arnob-abbr { color:var(--rose); }
+#tasmim-abbr { color:var(--blush); }
 
-/* Start Button */
-.btn-start {
-  padding:18px 50px; background:rgba(232, 48, 90, 0.05);
-  border: 1px solid var(--rose); color:white; font-family:'Uncial Antiqua';
-  cursor:pointer; transition: all 0.4s; letter-spacing: 4px; font-size: 1.2rem;
-  box-shadow: 0 0 15px rgba(232, 48, 90, 0.2);
+#mid-hud {
+  position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  z-index:51; display:flex; flex-direction:column; align-items:center; gap:3px;
+  pointer-events:none;
 }
-.btn-start:hover { 
-    background:var(--rose); 
-    box-shadow: 0 0 40px var(--rose); 
-    transform: scale(1.05);
+#death-counter { font-family:'Uncial Antiqua',serif; font-size:0.7rem; color:var(--rose); letter-spacing:0.12em; opacity:0.8; }
+#status-text { font-style:italic; color:var(--fog); font-size:0.68rem; letter-spacing:0.08em; max-width:200px; text-align:center; }
+
+/* ---- CANVAS ---- */
+#canvas {
+  position:absolute; inset:0; width:100%; height:100%;
+  image-rendering:pixelated;
 }
 
+/* ---- CONTROLS BAR ---- */
+#controls-bar {
+  position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+  z-index:50; display:flex; gap:30px; pointer-events:none;
+  color:rgba(255,255,255,0.25); font-size:0.65rem; letter-spacing:0.08em;
+}
+.ctrl { text-align:center; }
+.ctrl span { display:block; font-family:'Uncial Antiqua',serif; font-size:0.5rem; color:rgba(255,255,255,0.4); margin-bottom:2px; letter-spacing:0.15em; }
+
+/* ---- DEATH/RESPAWN overlay ---- */
 #game-overlay {
-  position:absolute; inset:0; z-index:60; display:none;
-  flex-direction:column; align-items:center; justify-content:center;
-  background:rgba(5, 2, 10, 0.98); backdrop-filter:blur(15px);
+  position:absolute; inset:0; z-index:60;
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(10,6,16,0.88); backdrop-filter:blur(10px); gap:16px;
 }
 #game-overlay.show { display:flex; }
+#game-overlay h2 { font-family:'Uncial Antiqua',serif; font-size:2.4rem; color:var(--cream); text-shadow:0 0 40px rgba(232,48,90,0.8); text-align:center; }
+#game-overlay p { font-style:italic; color:var(--fog); font-size:1rem; text-align:center; max-width:460px; line-height:1.8; }
+#game-overlay button {
+  background:transparent; border:1px solid rgba(232,48,90,0.5); color:var(--cream);
+  padding:10px 36px; font-family:'Uncial Antiqua',serif; font-size:0.9rem;
+  letter-spacing:0.2em; cursor:pointer; transition:all 0.25s;
+  box-shadow:0 0 16px rgba(232,48,90,0.2);
+}
+#game-overlay button:hover { background:rgba(232,48,90,0.15); border-color:var(--rose); box-shadow:0 0 30px rgba(232,48,90,0.5); transform:translateY(-2px); }
 </style>
 </head>
 <body>
 
-<audio id="bgm" loop preload="auto">
-    <source src="assets/bg.mp3" type="audio/mpeg">
-</audio>
-
+<!-- ===== TITLE SCREEN ===== -->
 <div id="title-screen">
-    <h1 class="game-title">Love is War</h1>
-    <p class="sub-title">A DUEL IN THE ABYSS</p>
-    <button class="btn-start" id="start-btn" onclick="startGame()">ENTER THE WAR</button>
-    <p style="margin-top:20px; font-size:0.7rem; color:var(--stone);" id="audio-status">Wait for assets to load...</p>
+  <div class="title-bg"></div>
+  <div class="title-ruins"></div>
+  <canvas id="title-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.4;"></canvas>
+
+  <h1 class="game-title">Love is War</h1>
+  <p class="title-sub">An Eternal Battlefield</p>
+
+  <div class="title-names">
+    <div class="name-card arnob">
+      <div class="abbr">A.R.N.O.B</div>
+      <div class="full">Arcane Reaper,<br>Nightfall Overlord Bringer</div>
+    </div>
+    <div class="vs-text">vs</div>
+    <div class="name-card tasmim">
+      <div class="abbr">T.A.S.M.I.M</div>
+      <div class="full">Twilight Angel Star,<br>My Infinite Miracle</div>
+    </div>
+  </div>
+
+  <div id="music-status">♪ loading bg.mp3...</div>
+
+  <button class="begin-btn" onclick="beginGame()">Enter the War</button>
 </div>
 
+<!-- ===== GAME ===== -->
 <div id="game-wrap">
-    <div id="hud">
-        <div class="hp-container">
-            <div style="color:var(--rose); font-family:'Uncial Antiqua'; font-size: 1.1rem; margin-bottom: 5px;">A.R.N.O.B</div>
-            <div class="hp-bar"><div id="arnob-hp" class="hp-fill" style="background:var(--rose)"></div></div>
-        </div>
-        <div style="text-align:center">
-            <div id="deaths" style="font-family:'Uncial Antiqua'; font-size:1.2rem; color:var(--rose); text-shadow: 0 0 10px var(--rose);">☠ 0</div>
-            <div id="status" style="font-style:italic; font-size:0.75rem; color:var(--fog); margin-top:5px;">He always returns for her...</div>
-        </div>
-        <div class="hp-container" style="text-align:right">
-            <div style="color:var(--blush); font-family:'Uncial Antiqua'; font-size: 1.1rem; margin-bottom: 5px;">T.A.S.M.I.M</div>
-            <div class="hp-bar"><div id="tasmim-hp" class="hp-fill" style="background:var(--blush)"></div></div>
-        </div>
+  <canvas id="canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-panel left">
+      <div class="hud-abbr" id="arnob-abbr">A.R.N.O.B</div>
+      <div class="hud-fullname">Arcane Reaper, Nightfall Overlord Bringer</div>
+      <div class="hud-hp-row">
+        <div class="hud-hp-label">HP</div>
+        <div class="hp-track" style="width:100px"><div class="hp-fill" id="arnob-hp-fill"></div></div>
+        <div id="arnob-hp-num" style="font-size:0.6rem;opacity:0.6">10/10</div>
+      </div>
     </div>
-    <canvas id="canvas"></canvas>
-    
-    <div id="game-overlay">
-        <h2 id="end-title" style="font-family:'Uncial Antiqua'; font-size:4rem; color:var(--rose); margin-bottom:20px;">FALLEN</h2>
-        <p id="end-msg" style="margin-bottom:40px; font-size:1.2rem; line-height:1.6; text-align:center; max-width:600px; color:var(--fog);"></p>
-        <button class="btn-start" onclick="resetGame()">RISE AGAIN</button>
+    <div id="mid-hud">
+      <div id="death-counter">☠ 0 Falls</div>
+      <div id="status-text">He always returns</div>
     </div>
+    <div class="hud-panel right">
+      <div class="hud-abbr" id="tasmim-abbr">T.A.S.M.I.M</div>
+      <div class="hud-fullname">Twilight Angel Star, My Infinite Miracle</div>
+      <div class="hud-hp-row">
+        <div id="tasmim-hp-num" style="font-size:0.6rem;opacity:0.6">15/15</div>
+        <div class="hp-track" style="width:100px"><div class="hp-fill" id="tasmim-hp-fill"></div></div>
+        <div class="hud-hp-label">HP</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls-bar">
+    <div class="ctrl"><span>T.A.S.M.I.M</span>WASD move · Space shoot</div>
+    <div class="ctrl"><span>A.R.N.O.B</span>AI · love arrows · respawns forever</div>
+  </div>
+
+  <div id="game-overlay">
+    <h2 id="overlay-title">—</h2>
+    <p id="overlay-body">—</p>
+    <button onclick="restartGame()">Rise Again</button>
+  </div>
 </div>
+
+<audio id="bgm" loop></audio>
 
 <script>
+// =====================================================================
+//  LOVE IS WAR — Hollow Knight / Silksong inspired
+// =====================================================================
+
+// ---- Audio ----
+let bgmAudio = document.getElementById('bgm');
+
+// Auto-load from assets folder
+bgmAudio.src = 'assets/bg.mp3';
+bgmAudio.addEventListener('canplaythrough', () => {
+  document.getElementById('music-status').textContent = '♪ bg.mp3 ready';
+});
+bgmAudio.addEventListener('error', () => {
+  document.getElementById('music-status').textContent = '— place bg.mp3 in /assets/ folder —';
+});
+
+function playMusic() {
+  bgmAudio.volume = 0.45;
+  bgmAudio.play().catch(() => {});
+}
+
+// ---- Title canvas (drifting pink heart-clouds) ----
+const titleCanvas = document.getElementById('title-canvas');
+const tctx = titleCanvas.getContext('2d');
+let titleClouds = [];
+function initTitleCanvas() {
+  titleCanvas.width = window.innerWidth;
+  titleCanvas.height = window.innerHeight;
+  titleClouds = Array.from({length:18}, () => ({
+    x: Math.random() * titleCanvas.width,
+    y: Math.random() * titleCanvas.height,
+    size: 12 + Math.random() * 30,
+    vx: 0.2 + Math.random() * 0.5,
+    vy: -0.1 - Math.random() * 0.2,
+    opacity: 0.06 + Math.random() * 0.12,
+    phase: Math.random() * Math.PI * 2
+  }));
+}
+function animateTitleBg(ts) {
+  tctx.clearRect(0, 0, titleCanvas.width, titleCanvas.height);
+  titleClouds.forEach(c => {
+    c.x += c.vx; c.y += c.vy + Math.sin(ts/3000 + c.phase) * 0.15;
+    if (c.x > titleCanvas.width + 40) c.x = -40;
+    if (c.y < -40) c.y = titleCanvas.height + 40;
+    tctx.save();
+    tctx.globalAlpha = c.opacity;
+    drawPixelHeart(tctx, c.x, c.y, c.size, '#f07090');
+    tctx.restore();
+  });
+  if (!gameRunning) requestAnimationFrame(animateTitleBg);
+}
+function drawPixelHeart(c, x, y, size, color) {
+  // Pixel-style heart (no outline, filled)
+  const s = size / 10;
+  c.fillStyle = color;
+  const pts = [
+    [1,0],[2,0],[4,0],[5,0],
+    [0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],
+    [0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],
+    [1,3],[2,3],[3,3],[4,3],[5,3],
+    [2,4],[3,4],[4,4],
+    [3,5]
+  ];
+  pts.forEach(([px,py]) => {
+    c.fillRect(x + (px-3)*s, y + (py-2)*s, s, s);
+  });
+}
+initTitleCanvas();
+requestAnimationFrame(animateTitleBg);
+
+// ---- Game start ----
+let gameRunning = false;
+function beginGame() {
+  const ts = document.getElementById('title-screen');
+  const gw = document.getElementById('game-wrap');
+  ts.classList.add('fade-out');
+  setTimeout(() => { ts.style.display='none'; gw.classList.add('visible'); initGame(); playMusic(); gameRunning = true; requestAnimationFrame(gameLoop); }, 1200);
+}
+
+// =====================================================================
+//  GAME ENGINE
+// =====================================================================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const bgm = document.getElementById('bgm');
-const audioStatus = document.getElementById('audio-status');
+ctx.imageSmoothingEnabled = false;
 
-// Settings
-const WORLD_W = 4000, WORLD_H = 1000;
-const G = 0.65, FRICTION = 0.88;
-const T_MAX_HP = 20, A_MAX_HP = 15;
-
-let W, H, isRunning = false, frame = 0, screenShake = 0;
-let tas, arn, projs = [], parts = [], plats = [], deathCount = 0;
-const cam = { x: 0, y: 0 };
-const keys = {};
-
-// Audio Loading Check
-bgm.oncanplaythrough = () => { audioStatus.innerText = "♪ Ready to play"; };
-bgm.onerror = () => { audioStatus.innerText = "Error: Check assets/bg.mp3"; audioStatus.style.color = "red"; };
-
-function startGame() {
-    // 1. Play Audio (Now allowed because of click)
-    bgm.play().catch(err => console.log("Audio failed to play:", err));
-    
-    // 2. Transition Screens
-    document.getElementById('title-screen').classList.add('fade-out');
-    document.getElementById('game-wrap').classList.add('visible');
-    
-    // 3. Initialize & Start Loop
-    init();
-    isRunning = true;
-    requestAnimationFrame(gameLoop);
-}
-
-function init() {
-    resize();
-    tas = { x: 600, y: 800, w: 35, h: 50, vx: 0, vy: 0, hp: T_MAX_HP, side: 1, jumps: 0 };
-    arn = { x: 3000, y: 800, w: 35, h: 50, vx: 0, vy: 0, hp: A_MAX_HP, side: -1, lastShot: 0, alive: true, respawnTime: 0 };
-    
-    plats = [
-        {x: 0, y: 880, w: WORLD_W, h: 120}, // Ground
-        {x: 400, y: 680, w: 350, h: 15},
-        {x: 900, y: 520, w: 450, h: 15},
-        {x: 1600, y: 680, w: 400, h: 15},
-        {x: 2300, y: 520, w: 500, h: 15},
-        {x: 3000, y: 680, w: 400, h: 15}
-    ];
-    projs = []; parts = []; deathCount = 0;
-}
-
+let W, H;
 function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); buildWorld(); });
+
+// ---- World ----
+const WORLD_W = 3600;
+const WORLD_H = 900;
+const GRAVITY = 0.55;
+const FLOOR_H = 120;
+
+// Platform layout (x, y, w, h)
+let platforms = [];
+function buildWorld() {
+  const gh = WORLD_H - FLOOR_H; // ground Y
+  platforms = [
+    // Ground
+    {x:0,       y:gh, w:WORLD_W, h:FLOOR_H, type:'ground'},
+    // Raised platforms
+    {x:300,  y:gh-140, w:180, h:18, type:'plat'},
+    {x:600,  y:gh-240, w:140, h:18, type:'plat'},
+    {x:900,  y:gh-160, w:200, h:18, type:'plat'},
+    {x:1200, y:gh-280, w:160, h:18, type:'plat'},
+    {x:1500, y:gh-180, w:220, h:18, type:'plat'},
+    {x:1800, y:gh-300, w:140, h:18, type:'plat'},
+    {x:2100, y:gh-200, w:180, h:18, type:'plat'},
+    {x:2400, y:gh-260, w:160, h:18, type:'plat'},
+    {x:2700, y:gh-150, w:200, h:18, type:'plat'},
+    {x:3000, y:gh-220, w:160, h:18, type:'plat'},
+    {x:3200, y:gh-320, w:180, h:18, type:'plat'},
+    // Low ledges
+    {x:450,  y:gh-70,  w:100, h:14, type:'plat'},
+    {x:750,  y:gh-100, w:120, h:14, type:'plat'},
+    {x:1050, y:gh-80,  w:100, h:14, type:'plat'},
+    {x:1350, y:gh-120, w:130, h:14, type:'plat'},
+    {x:1650, y:gh-90,  w:110, h:14, type:'plat'},
+    {x:1950, y:gh-130, w:120, h:14, type:'plat'},
+    {x:2250, y:gh-100, w:130, h:14, type:'plat'},
+    {x:2550, y:gh-110, w:120, h:14, type:'plat'},
+    {x:2850, y:gh-70,  w:100, h:14, type:'plat'},
+    {x:3100, y:gh-150, w:140, h:14, type:'plat'},
+  ];
+}
+buildWorld();
+
+// ---- Camera ----
+let cam = { x:0, y:0, tx:0, ty:0 };
+function camUpdate(target) {
+  // Smooth follow with slight ahead-look
+  const lookAhead = target.facing * 80;
+  cam.tx = target.x + target.w/2 - W/2 + lookAhead;
+  cam.ty = target.y + target.h/2 - H/2 - 60;
+  cam.tx = Math.max(0, Math.min(WORLD_W - W, cam.tx));
+  cam.ty = Math.max(0, Math.min(WORLD_H - H, cam.ty));
+  cam.x += (cam.tx - cam.x) * 0.08;
+  cam.y += (cam.ty - cam.y) * 0.08;
 }
 
-window.onresize = resize;
-window.onkeydown = e => keys[e.code] = true;
-window.onkeyup = e => keys[e.code] = false;
+// ---- Keys ----
+const keys = {};
+window.addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if([' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+});
+window.addEventListener('keyup', e => { keys[e.key] = false; });
 
-function gameLoop() {
-    if (!isRunning) return;
-    update();
-    draw();
-    frame++;
-    requestAnimationFrame(gameLoop);
+// ---- Constants ----
+const ARNOB_MAX_HP = 10, TASMIM_MAX_HP = 15;
+const ARNOB_SHOOT_CD = 1500, TASMIM_SHOOT_CD = 180; // faster shooting
+const RESPAWN_TIME = 2000;
+const PW = 28, PH = 42; // player size
+
+// ---- State ----
+let arnob, tasmim, projectiles, particles, arnobDeaths, arnobAlive, arnobRespawnTimer;
+let lastShotT, lastShotA, frameCount;
+let heartClouds = [];
+
+function initGame() {
+  const gh = WORLD_H - FLOOR_H;
+  tasmim = { x:700, y:gh-PH, w:PW, h:PH, hp:TASMIM_MAX_HP, maxHp:TASMIM_MAX_HP, vx:0, vy:0, facing:1, onGround:false, animState:'idle', animFrame:0, animTick:0, shootFlash:0, jumpCount:0, invincible:0 };
+  arnob  = makeArnob('left');
+  projectiles=[]; particles=[]; heartClouds=[];
+  arnobAlive=true; arnobDeaths=0; arnobRespawnTimer=0;
+  lastShotT=0; lastShotA=0; frameCount=0;
+  // Spawn heart clouds
+  for(let i=0;i<25;i++) spawnHeartCloud(Math.random()*WORLD_W, Math.random()*WORLD_H*0.6);
+  updateHUD(); updateDeaths(); setStatus('He always returns for her');
 }
 
-function update() {
-    if (screenShake > 0) screenShake--;
+function makeArnob(side) {
+  const gh = WORLD_H - FLOOR_H;
+  const sx = side==='left' ? 200 : WORLD_W - 250;
+  return { x:sx, y:gh-PH, w:PW, h:PH, hp:ARNOB_MAX_HP, maxHp:ARNOB_MAX_HP, vx:0, vy:0, facing:side==='left'?1:-1, onGround:false, animState:'idle', animFrame:0, animTick:0, shootFlash:0, jumpCount:0 };
+}
 
-    // Tasmim Movement
-    if (keys['KeyA']) { tas.vx -= 1.8; tas.side = -1; }
-    if (keys['KeyD']) { tas.vx += 1.8; tas.side = 1; }
-    if (keys['KeyW'] && tas.jumps < 2) { 
-        tas.vy = -15; tas.jumps++; 
-        keys['KeyW'] = false; 
+function spawnHeartCloud(x, y) {
+  heartClouds.push({
+    x, y,
+    vx: 0.3 + Math.random() * 0.6,
+    vy: -0.05 - Math.random() * 0.15,
+    size: 18 + Math.random() * 40,
+    opacity: 0.08 + Math.random() * 0.14,
+    phase: Math.random() * Math.PI * 2,
+    wobble: Math.random() * 0.003 + 0.001
+  });
+}
+
+// =====================================================================
+//  PHYSICS
+// =====================================================================
+function physicsStep(p) {
+  p.vy += GRAVITY;
+  p.x += p.vx;
+  p.y += p.vy;
+
+  // Friction
+  if(p.onGround) p.vx *= 0.8;
+
+  p.onGround = false;
+
+  for(const plat of platforms) {
+    // Only collide from above
+    if(p.x + p.w > plat.x && p.x < plat.x + plat.w) {
+      const prevBottom = p.y + p.h - p.vy;
+      const currBottom = p.y + p.h;
+      if(prevBottom <= plat.y + 2 && currBottom >= plat.y) {
+        p.y = plat.y - p.h;
+        p.vy = 0;
+        p.onGround = true;
+        p.jumpCount = 0;
+      }
     }
-    if (keys['Space'] && frame % 12 === 0) {
-        projs.push({x: tas.x + 15, y: tas.y + 20, vx: tas.side * 18, vy: 0, type: 'bolt', owner: 'tas'});
-    }
+  }
 
-    // Physics Processing
-    [tas, arn].forEach(e => {
-        if (!e.alive && e === arn) return;
-        e.vy += G; e.x += e.vx; e.y += e.vy;
-        e.vx *= FRICTION;
-        
-        plats.forEach(p => {
-            if (e.x + e.w > p.x && e.x < p.x + p.w && e.y + e.h > p.y && e.y + e.h < p.y + 25 && e.vy >= 0) {
-                e.y = p.y - e.h; e.vy = 0; e.jumps = 0;
-            }
-        });
-        e.x = Math.max(0, Math.min(WORLD_W - e.w, e.x));
-    });
+  // World bounds
+  p.x = Math.max(0, Math.min(WORLD_W - p.w, p.x));
+  if(p.y > WORLD_H + 100) { p.y = WORLD_H - FLOOR_H - p.h; p.vy = 0; p.onGround = true; }
+  if(p.y < -200) { p.vy = 1; }
+}
 
-    // Arnob AI Logic
-    if (arn.alive) {
-        const dx = tas.x - arn.x;
-        arn.side = dx > 0 ? 1 : -1;
-        if (Math.abs(dx) > 450) arn.vx += arn.side * 0.9;
-        
-        if (frame % 90 === 0) {
-            projs.push({x: arn.x + 15, y: arn.y + 20, vx: arn.side * 9, vy: (Math.random()-0.5)*2, type: 'arrow', owner: 'arn'});
-        }
+// =====================================================================
+//  UPDATE
+// =====================================================================
+let lastTs = 0;
+function gameLoop(ts) {
+  const dt = Math.min(ts - lastTs, 50);
+  lastTs = ts; frameCount++;
+  if(!gameRunning) return;
+  update(ts, dt);
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+function update(ts, dt) {
+  // ---- TASMIM input ----
+  const spd = 3.8;
+  let moving = false;
+  if(keys['a']||keys['A']) { tasmim.vx = Math.max(tasmim.vx-1.2, -spd); tasmim.facing=-1; moving=true; }
+  if(keys['d']||keys['D']) { tasmim.vx = Math.min(tasmim.vx+1.2,  spd); tasmim.facing= 1; moving=true; }
+  if(!moving) tasmim.vx *= 0.75;
+
+  if((keys['w']||keys['W']) && tasmim.jumpCount < 2) {
+    tasmim.vy = -12;
+    tasmim.jumpCount++;
+    tasmim.onGround = false;
+    keys['w'] = keys['W'] = false; // consume
+    burst(tasmim.x+PW/2, tasmim.y+PH, 'jump', 3);
+  }
+  if((keys[' ']) && ts - lastShotT > TASMIM_SHOOT_CD) {
+    lastShotT = ts;
+    spawnBullet(tasmim);
+    tasmim.shootFlash = 8;
+    keys[' '] = false;
+  }
+  if(tasmim.shootFlash>0) tasmim.shootFlash--;
+  if(tasmim.invincible>0) tasmim.invincible--;
+
+  // Tasmim anim
+  if(tasmim.shootFlash>0)     tasmim.animState='shoot';
+  else if(!tasmim.onGround)   tasmim.animState=tasmim.vy<0?'jump':'fall';
+  else if(moving)              tasmim.animState='walk';
+  else                         tasmim.animState='idle';
+
+  physicsStep(tasmim);
+
+  // ---- ARNOB AI ----
+  if(arnobAlive) {
+    const dx = tasmim.x - arnob.x;
+    const dist = Math.abs(dx);
+    arnob.facing = dx > 0 ? 1 : -1;
+
+    // Pathfinding: move toward TASMIM, jump over platforms
+    const idealDist = 280;
+    if(dist > idealDist + 30) {
+      arnob.vx += arnob.facing * 0.6;
+      arnob.vx = Math.max(-3.5, Math.min(3.5, arnob.vx));
+    } else if(dist < idealDist - 30) {
+      arnob.vx -= arnob.facing * 0.4;
+      arnob.vx = Math.max(-3.5, Math.min(3.5, arnob.vx));
     } else {
-        arn.respawnTime--;
-        if (arn.respawnTime <= 0) { 
-            arn.alive = true; 
-            arn.hp = A_MAX_HP; 
-            arn.x = (tas.x > WORLD_W/2) ? 400 : WORLD_W - 400; 
-        }
+      arnob.vx *= 0.8;
     }
 
-    // Collision & Combat
-    projs = projs.filter(p => {
-        p.x += p.vx;
-        const hitT = p.owner === 'arn' && checkHit(p, tas);
-        const hitA = p.owner === 'tas' && arn.alive && checkHit(p, arn);
+    // Jump: random or when stuck
+    if(arnob.onGround && Math.random() < 0.006) {
+      arnob.vy = -11; arnob.onGround = false; arnob.jumpCount=1;
+      burst(arnob.x+PW/2, arnob.y+PH, 'jump', 3);
+    }
+    // Double jump occasionally in air
+    if(!arnob.onGround && arnob.jumpCount===1 && Math.random()<0.004) {
+      arnob.vy=-9; arnob.jumpCount=2;
+    }
 
-        if (hitT) {
-            tas.hp = Math.min(T_MAX_HP, tas.hp + 3); // Arnob heals her
-            arn.hp = Math.min(A_MAX_HP, arn.hp + 1);
-            spawnBurst(p.x, p.y, 'var(--blush)');
-            return false;
-        }
-        if (hitA) {
-            arn.hp -= 3; tas.hp -= 1.4; // Shooting him costs her HP
-            screenShake = 12;
-            spawnBurst(p.x, p.y, 'var(--rose)');
-            if (arn.hp <= 0) { arn.alive = false; arn.respawnTime = 180; deathCount++; }
-            if (tas.hp <= 0) endGame();
-            return false;
-        }
-        return p.x > 0 && p.x < WORLD_W;
+    // Shoot
+    if(ts - lastShotA > ARNOB_SHOOT_CD) {
+      lastShotA = ts;
+      spawnArrow(arnob);
+      arnob.shootFlash = 10;
+    }
+    if(arnob.shootFlash>0) arnob.shootFlash--;
+
+    // Arnob anim
+    if(arnob.shootFlash>0)    arnob.animState='shoot';
+    else if(!arnob.onGround)  arnob.animState=arnob.vy<0?'jump':'fall';
+    else if(Math.abs(arnob.vx)>0.3) arnob.animState='walk';
+    else                       arnob.animState='idle';
+
+    physicsStep(arnob);
+  } else {
+    arnobRespawnTimer -= dt;
+    if(arnobRespawnTimer<=0) respawnArnob();
+  }
+
+  // ---- Animate frames ----
+  tickCharAnim(tasmim);
+  if(arnobAlive) tickCharAnim(arnob);
+
+  // ---- Projectiles ----
+  projectiles = projectiles.filter(p => {
+    p.x += p.vx; p.y += p.vy;
+    p.life--;
+    if(p.life<=0) return false;
+
+    if(p.type==='arrow' && rectsOverlap(p, tasmim)) {
+      // Arrow hits TASMIM: heal both
+      if(arnobAlive) arnob.hp = Math.min(ARNOB_MAX_HP, arnob.hp+5);
+      tasmim.hp = Math.min(TASMIM_MAX_HP, tasmim.hp+4);
+      burst(p.x, p.y, 'heal', 8);
+      updateHUD(); setStatus('+4 her · +5 him — love heals all');
+      return false;
+    }
+    if(p.type==='bullet' && arnobAlive && rectsOverlap(p, arnob)) {
+      arnob.hp -= 2;
+      tasmim.hp = Math.max(0, tasmim.hp - 2); // now -2 only
+      burst(p.x, p.y, 'hit', 6);
+      updateHUD(); setStatus('Every shot costs her too · −2 each');
+      if(tasmim.hp<=0) { tasmimFall(); return false; }
+      if(arnob.hp<=0) { arnob.hp=0; killArnob(); }
+      return false;
+    }
+    return true;
+  });
+
+  // ---- Heart clouds ----
+  heartClouds.forEach(c => {
+    c.x += c.vx;
+    c.y += c.vy + Math.sin(frameCount * c.wobble + c.phase) * 0.3;
+    if(c.x > WORLD_W + 60) c.x = -60;
+    if(c.y < -60) c.y = WORLD_H * 0.6;
+  });
+
+  // ---- Particles ----
+  particles = particles.filter(p => {
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.18; p.life-=0.025;
+    return p.life>0;
+  });
+
+  // Camera follows TASMIM
+  camUpdate(tasmim);
+}
+
+function spawnBullet(char) {
+  projectiles.push({
+    x: char.x + (char.facing>0 ? char.w+2 : -8),
+    y: char.y + char.h*0.4,
+    vx: char.facing * 14, vy: 0,
+    w:6, h:6, type:'bullet', life:80
+  });
+}
+function spawnArrow(char) {
+  const dy = (Math.random()-0.5)*2;
+  projectiles.push({
+    x: char.x + (char.facing>0 ? char.w : -10),
+    y: char.y + char.h*0.35,
+    vx: char.facing * 7, vy: dy,
+    w:10, h:5, type:'arrow', life:120
+  });
+}
+
+function rectsOverlap(a, b) {
+  return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+}
+
+function tickCharAnim(c) {
+  c.animTick = (c.animTick||0) + 1;
+  const speed = c.animState==='walk'?6:c.animState==='shoot'?4:8;
+  if(c.animTick >= speed) {
+    c.animTick=0;
+    const frames = c.animState==='walk'?4:c.animState==='idle'?2:2;
+    c.animFrame = (c.animFrame+1)%frames;
+  }
+}
+
+function killArnob() {
+  arnobAlive=false; arnobDeaths++;
+  arnobRespawnTimer=RESPAWN_TIME;
+  burst(arnob.x+PW/2, arnob.y+PH/2, 'death', 20);
+  updateDeaths();
+  setStatus('He falls... ('+arnobDeaths+'×) — he will return');
+  projectiles=projectiles.filter(p=>p.type!=='arrow');
+}
+function respawnArnob() {
+  arnobAlive=true;
+  const side = tasmim.x > WORLD_W/2 ? 'left' : 'right';
+  arnob=makeArnob(side);
+  burst(arnob.x+PW/2, arnob.y+PH/2, 'spawn', 16);
+  setStatus('A.R.N.O.B rises... always for her');
+  updateHUD();
+}
+function tasmimFall() {
+  gameRunning=false; tasmim.hp=0; updateHUD();
+  document.getElementById('overlay-title').textContent='T.A.S.M.I.M has fallen';
+  document.getElementById('overlay-body').innerHTML =
+    'She wounded herself in the pursuit of him.<br><i>Every bullet she fired took something from her.</i><br><br>' +
+    '<b style="color:#e8305a">A.R.N.O.B fell '+arnobDeaths+' time'+(arnobDeaths!==1?'s':'')+' before she did.</b>';
+  document.getElementById('game-overlay').classList.add('show');
+}
+function restartGame() {
+  document.getElementById('game-overlay').classList.remove('show');
+  initGame(); gameRunning=true; requestAnimationFrame(gameLoop);
+}
+
+function burst(x, y, type, n) {
+  for(let i=0;i<n;i++) {
+    const angle = (Math.PI*2/n)*i + Math.random()*0.5;
+    const spd = 1.5 + Math.random()*3;
+    particles.push({
+      x,y,
+      vx:Math.cos(angle)*spd*(type==='jump'?0.6:1),
+      vy:Math.sin(angle)*spd - (type==='jump'?3:1),
+      life:1, type,
+      size: type==='death'?4+Math.random()*5 : type==='heal'?3+Math.random()*4 : 2+Math.random()*3,
+      hue: type==='hit'?0 : type==='heal'?320 : type==='spawn'?280 : type==='death'?340 : 200
     });
-
-    parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.a -= 0.025; });
-    parts = parts.filter(p => p.a > 0);
-
-    // Smooth Camera Follow
-    const targetCamX = tas.x - W/2;
-    cam.x += (targetCamX - cam.x) * 0.08;
-    cam.x = Math.max(0, Math.min(WORLD_W - W, cam.x));
-
-    // Update UI Elements
-    document.getElementById('tasmim-hp').style.width = (tas.hp / T_MAX_HP * 100) + '%';
-    document.getElementById('arnob-hp').style.width = (arn.hp / A_MAX_HP * 100) + '%';
-    document.getElementById('deaths').innerText = `☠ ${deathCount}`;
+  }
 }
 
-function checkHit(p, e) {
-    const padding = 5;
-    return p.x > e.x - padding && p.x < e.x + e.w + padding && p.y > e.y - padding && p.y < e.y + e.h + padding;
+function updateHUD() {
+  const ap = (arnobAlive?arnob.hp:0)/ARNOB_MAX_HP*100;
+  const tp = tasmim.hp/TASMIM_MAX_HP*100;
+  document.getElementById('arnob-hp-fill').style.width = ap+'%';
+  document.getElementById('tasmim-hp-fill').style.width = tp+'%';
+  document.getElementById('arnob-hp-num').textContent = (arnobAlive?arnob.hp:0)+'/'+ARNOB_MAX_HP;
+  document.getElementById('tasmim-hp-num').textContent = tasmim.hp+'/'+TASMIM_MAX_HP;
 }
+function updateDeaths() { document.getElementById('death-counter').textContent='☠ '+arnobDeaths+' Fall'+(arnobDeaths!==1?'s':''); }
+function setStatus(m) { document.getElementById('status-text').textContent=m; }
 
-function spawnBurst(x, y, color) {
-    for(let i=0; i<12; i++) parts.push({x, y, vx:(Math.random()-0.5)*12, vy:(Math.random()-0.5)*12, a:1, c:color});
-}
+// =====================================================================
+//  RENDER
+// =====================================================================
 
-function draw() {
+// Parallax BG layers
+const bgLayers = [
+  { color:'#0a0610', speed:0 },       // sky
+  { color:null, speed:0.06 },          // far stars
+  { color:null, speed:0.18 },          // mid silhouettes
+  { color:null, speed:0.45 },          // near columns
+];
+
+// Pre-generate static star field
+const stars = Array.from({length:200}, () => ({
+  x: Math.random()*WORLD_W, y: Math.random()*(WORLD_H*0.7),
+  r: Math.random()*1.5+0.3,
+  bright: 0.3+Math.random()*0.6, phase: Math.random()*Math.PI*2
+}));
+
+// Pre-generate background architecture (Hollow Knight ruins feel)
+const bgColumns = Array.from({length:30}, () => ({
+  x: Math.random()*WORLD_W,
+  h: 80+Math.random()*200,
+  w: 12+Math.random()*20,
+  layer: Math.floor(Math.random()*2)+1
+}));
+const bgArches = Array.from({length:12}, () => ({
+  x: Math.random()*WORLD_W,
+  y: WORLD_H - FLOOR_H - 60 - Math.random()*120,
+  w: 60+Math.random()*80
+}));
+
+function render() {
+  ctx.clearRect(0,0,W,H);
+
+  // ---- Sky gradient ----
+  const skyGrad = ctx.createLinearGradient(0,0,0,H);
+  skyGrad.addColorStop(0, '#060310');
+  skyGrad.addColorStop(0.5, '#0e0820');
+  skyGrad.addColorStop(1, '#180c2a');
+  ctx.fillStyle=skyGrad; ctx.fillRect(0,0,W,H);
+
+  // ---- Parallax layers ----
+  // FAR: stars
+  ctx.save();
+  const farOff = cam.x * 0.06;
+  stars.forEach(s => {
+    const sx = (s.x - farOff % WORLD_W + WORLD_W) % WORLD_W;
+    const sy = s.y - cam.y * 0.04;
+    if(sy<0||sy>H) return;
+    const blink = s.bright + Math.sin(frameCount*0.02+s.phase)*0.15;
+    ctx.globalAlpha = Math.max(0,blink);
+    ctx.fillStyle='#c8b8e0';
+    ctx.beginPath(); ctx.arc(sx%W, sy, s.r, 0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+
+  // MID: distant columns / ruins silhouettes
+  ctx.save();
+  const midOff = cam.x * 0.18;
+  ctx.globalAlpha = 0.25;
+  bgColumns.filter(c=>c.layer===1).forEach(col => {
+    const cx = (col.x - midOff % WORLD_W + WORLD_W) % WORLD_W;
+    const cy = H - FLOOR_H*0.5 - col.h;
+    ctx.fillStyle='#1e1030';
+    ctx.fillRect(cx%W, cy, col.w, col.h+FLOOR_H);
+    // Capital
+    ctx.fillRect((cx-8)%W, cy, col.w+16, 10);
+  });
+  ctx.restore();
+
+  // NEAR: closer columns
+  ctx.save();
+  const nearOff = cam.x * 0.45;
+  ctx.globalAlpha = 0.4;
+  bgColumns.filter(c=>c.layer===2).forEach(col => {
+    const cx = (col.x - nearOff % WORLD_W + WORLD_W) % WORLD_W;
+    const cy = H - FLOOR_H*0.8 - col.h;
+    ctx.fillStyle='#150a25';
+    ctx.fillRect(cx%W, cy, col.w, col.h+FLOOR_H);
+    ctx.fillRect((cx-6)%W, cy, col.w+12, 8);
+  });
+  // Arches
+  ctx.globalAlpha=0.3;
+  bgArches.forEach(a => {
+    const ax = (a.x - nearOff % WORLD_W + WORLD_W) % WORLD_W;
+    const ay = a.y - cam.y * 0.45 + (WORLD_H - FLOOR_H);
+    // Arch shape
+    ctx.strokeStyle='#2a1f3d'; ctx.lineWidth=8;
+    ctx.beginPath();
+    ctx.moveTo(ax%W, ay+80);
+    ctx.lineTo(ax%W, ay+40);
+    ctx.arc((ax+a.w/2)%W, ay+40, a.w/2, Math.PI, 0);
+    ctx.lineTo((ax+a.w)%W, ay+80);
+    ctx.stroke();
+  });
+  ctx.restore();
+
+  // ---- Heart clouds (world space) ----
+  heartClouds.forEach(c => {
+    const sx = c.x - cam.x;
+    const sy = c.y - cam.y;
+    if(sx<-80||sx>W+80||sy<-80||sy>H+80) return;
     ctx.save();
-    ctx.clearRect(0,0,W,H);
-    
-    // Background sky gradient
-    const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, "#0a0610");
-    sky.addColorStop(1, "#1e1030");
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, W, H);
-
-    if (screenShake > 0) ctx.translate((Math.random()-0.5)*screenShake, (Math.random()-0.5)*screenShake);
-    ctx.translate(-cam.x, 0);
-
-    // Draw Ruins (Platforms)
-    ctx.fillStyle = "#12091e";
-    plats.forEach(p => {
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-        ctx.strokeStyle = "#2a1f3d";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(p.x, p.y, p.w, p.h);
-    });
-
-    // Draw Knights
-    if (arn.alive) drawCharacter(arn, "#e8305a", "horns");
-    drawCharacter(tas, "#f0e8ff", "wings");
-
-    // Draw Glowing Bolts
-    projs.forEach(p => {
-        ctx.fillStyle = p.owner === 'tas' ? "#f8aec0" : "#e8305a";
-        ctx.shadowBlur = 20; ctx.shadowColor = ctx.fillStyle;
-        ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill();
-        ctx.shadowBlur = 0;
-    });
-
-    // Draw Particles
-    parts.forEach(p => {
-        ctx.globalAlpha = p.a; ctx.fillStyle = p.c;
-        ctx.fillRect(p.x, p.y, 4, 4);
-    });
-
+    ctx.globalAlpha = c.opacity * (0.8 + Math.sin(frameCount*c.wobble+c.phase)*0.2);
+    drawPixelHeart(ctx, sx, sy, c.size, '#f07090');
     ctx.restore();
-}
+  });
 
-function drawCharacter(e, color, type) {
-    ctx.save();
-    const bob = Math.sin(frame * 0.1) * 4;
-    ctx.translate(e.x, e.y + bob);
-    if (e.side === -1) { ctx.translate(e.w, 0); ctx.scale(-1, 1); }
+  // ---- World-to-screen transform ----
+  ctx.save();
+  ctx.translate(-cam.x, -cam.y);
 
-    // Body
-    ctx.fillStyle = color;
-    ctx.beginPath(); ctx.roundRect(0, 0, e.w, e.h, 10); ctx.fill();
-
-    // Eyes
-    ctx.fillStyle = "#0a0610";
-    ctx.fillRect(22, 14, 4, 10); ctx.fillRect(10, 14, 4, 10);
-
-    if (type === "wings") {
-        ctx.globalAlpha = 0.4; ctx.fillStyle = "white";
-        ctx.beginPath(); ctx.ellipse(-10, 25, 25, 10, 0.7, 0, 7); ctx.fill();
+  // ---- Platforms ----
+  platforms.forEach(plat => {
+    if(plat.x+plat.w < cam.x-10 || plat.x > cam.x+W+10) return;
+    if(plat.type==='ground') {
+      // Ground with layered depth
+      const gg = ctx.createLinearGradient(0,plat.y,0,plat.y+plat.h);
+      gg.addColorStop(0,'#2a1f3d');
+      gg.addColorStop(0.15,'#1e1030');
+      gg.addColorStop(1,'#0a0610');
+      ctx.fillStyle=gg; ctx.fillRect(plat.x,plat.y,plat.w,plat.h);
+      // Ground top edge glow
+      ctx.strokeStyle='rgba(100,60,150,0.4)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(plat.x,plat.y); ctx.lineTo(plat.x+plat.w,plat.y); ctx.stroke();
+      // Moss / texture dots
+      ctx.fillStyle='rgba(60,40,90,0.6)';
+      for(let tx=plat.x;tx<plat.x+plat.w;tx+=18) {
+        ctx.fillRect(tx,plat.y+1,8,3);
+      }
     } else {
-        ctx.strokeStyle = "#801030"; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.moveTo(5,0); ctx.lineTo(0,-18); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(30,0); ctx.lineTo(35,-18); ctx.stroke();
+      // Platform
+      ctx.fillStyle='#2a1f3d';
+      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
+      ctx.fillStyle='#3d2d55';
+      ctx.fillRect(plat.x, plat.y, plat.w, 5);
+      ctx.strokeStyle='rgba(100,60,180,0.3)'; ctx.lineWidth=1;
+      ctx.strokeRect(plat.x+0.5,plat.y+0.5,plat.w-1,plat.h-1);
+      // Hanging roots
+      ctx.fillStyle='rgba(60,30,80,0.5)';
+      for(let rx=plat.x+8;rx<plat.x+plat.w-8;rx+=14) {
+        const rh=8+Math.sin(rx*0.1)*5;
+        ctx.fillRect(rx, plat.y+plat.h, 2, rh);
+      }
     }
+  });
+
+  // ---- Projectiles ----
+  projectiles.forEach(p => {
+    if(p.type==='arrow') {
+      // Glowing arrow
+      ctx.save();
+      const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,10);
+      grd.addColorStop(0,'rgba(232,48,90,0.8)'); grd.addColorStop(1,'rgba(232,48,90,0)');
+      ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(p.x,p.y,10,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#e8305a';
+      ctx.fillRect(p.x-8, p.y-2, 16, 4);
+      // Arrowhead
+      ctx.beginPath(); ctx.moveTo(p.x+8,p.y); ctx.lineTo(p.x+2,p.y-4); ctx.lineTo(p.x+2,p.y+4); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    } else {
+      // Bullet: fast purple bolt
+      ctx.save();
+      const bGrd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,8);
+      bGrd.addColorStop(0,'rgba(220,180,255,1)'); bGrd.addColorStop(1,'rgba(140,80,200,0)');
+      ctx.fillStyle=bGrd; ctx.beginPath(); ctx.arc(p.x,p.y,8,0,Math.PI*2); ctx.fill();
+      // Trail
+      ctx.fillStyle='rgba(180,140,255,0.5)';
+      ctx.fillRect(p.x - p.vx*2.5, p.y-1.5, p.vx*2.5, 3);
+      ctx.restore();
+    }
+  });
+
+  // ---- Particles ----
+  particles.forEach(p => {
+    ctx.save(); ctx.globalAlpha=Math.max(0,p.life);
+    const col = p.type==='hit'?`hsl(0,80%,65%)` : p.type==='heal'?`hsl(320,70%,70%)` : p.type==='death'?`hsl(340,80%,55%)` : p.type==='spawn'?`hsl(280,70%,70%)` : `hsl(200,60%,70%)`;
+    ctx.fillStyle=col;
+    ctx.fillRect(p.x-p.size/2, p.y-p.size/2, p.size, p.size);
     ctx.restore();
+  });
+
+  // ---- Characters ----
+  if(arnobAlive) drawArnob(arnob);
+  drawTasmim(tasmim);
+
+  // Respawn flash overlay
+  if(!arnobAlive) {
+    const flash = Math.sin(Date.now()/90)*0.5+0.5;
+    ctx.save(); ctx.globalAlpha=flash*0.04;
+    ctx.fillStyle='#e8305a'; ctx.fillRect(cam.x,cam.y,W,H);
+    ctx.restore();
+  }
+
+  ctx.restore(); // end world transform
+
+  // ---- Screen-space: respawn bar ----
+  if(!arnobAlive) {
+    const pct=Math.max(0,1-arnobRespawnTimer/RESPAWN_TIME);
+    ctx.fillStyle='rgba(232,48,90,0.1)'; ctx.fillRect(W/2-120,16,240,5);
+    ctx.fillStyle='rgba(232,48,90,0.7)'; ctx.fillRect(W/2-120,16,240*pct,5);
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='10px IM Fell English,serif';
+    ctx.textAlign='center'; ctx.fillText('A.R.N.O.B is returning...',W/2,12); ctx.textAlign='left';
+  }
 }
 
-function endGame() {
-    isRunning = false;
-    document.getElementById('end-title').innerText = "T.A.S.M.I.M Fallen";
-    document.getElementById('end-msg').innerHTML = `The star has dimmed in the eternal war.<br>A.R.N.O.B was defeated <b>${deathCount}</b> times before she gave in.`;
-    document.getElementById('game-overlay').classList.add('show');
+// =====================================================================
+//  PIXEL CHARACTER DRAWING
+// =====================================================================
+function drawArnob(p) {
+  const {x,y,facing,animState,animFrame,hp} = p;
+  ctx.save();
+
+  // Body wobble based on state
+  let offY = 0;
+  if(animState==='idle') offY = Math.sin(frameCount*0.08)*1.5;
+  if(animState==='walk') offY = Math.abs(Math.sin(frameCount*0.25))*2;
+
+  ctx.translate(x + PW/2, y + PH/2 + offY);
+  if(facing<0) ctx.scale(-1,1);
+
+  // Shadow
+  ctx.globalAlpha=0.25;
+  ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(0, PH/2+2, 12, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // Cloak glow
+  const cloakGlow=ctx.createRadialGradient(0,0,0,0,0,22);
+  cloakGlow.addColorStop(0,'rgba(80,30,120,0.4)'); cloakGlow.addColorStop(1,'rgba(80,30,120,0)');
+  ctx.fillStyle=cloakGlow; ctx.beginPath(); ctx.arc(0,0,22,0,Math.PI*2); ctx.fill();
+
+  // Dark wings
+  ctx.globalAlpha=0.6;
+  ctx.fillStyle='#1a0830';
+  // Left wing
+  ctx.beginPath(); ctx.moveTo(-4,-8); ctx.bezierCurveTo(-22,-16,-28,-2,-18,10); ctx.bezierCurveTo(-12,4,-4,2,-4,-8); ctx.fill();
+  // Right wing
+  ctx.beginPath(); ctx.moveTo(4,-8); ctx.bezierCurveTo(22,-16,28,-2,18,10); ctx.bezierCurveTo(12,4,4,2,4,-8); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // Cloak body (pixel blocks)
+  ctx.fillStyle='#1a0828';
+  ctx.fillRect(-9, -PH/2+14, 18, PH-14);
+  // Cloak folds
+  ctx.fillStyle='#2d0f45';
+  for(let i=0;i<3;i++) {
+    ctx.fillRect(-7+i*4, -PH/2+16, 3, PH-18);
+  }
+
+  // Head
+  ctx.fillStyle='#f0d0d8';
+  ctx.fillRect(-7, -PH/2, 14, 14);
+  // Dark hair
+  ctx.fillStyle='#100820';
+  ctx.fillRect(-8, -PH/2-3, 16, 8);
+  ctx.fillRect(-9, -PH/2+2, 3, 8); // side
+  // Glowing red eyes
+  ctx.fillStyle='#ff2255';
+  ctx.shadowColor='#ff2255'; ctx.shadowBlur=6;
+  ctx.fillRect(-5,-PH/2+4,3,2);
+  ctx.fillRect(2,-PH/2+4,3,2);
+  ctx.shadowBlur=0;
+
+  // Shoot effect
+  if(p.shootFlash>0) {
+    ctx.fillStyle='rgba(232,48,90,0.7)';
+    ctx.fillRect(9, -PH/2+10, p.shootFlash, 2);
+  }
+
+  // Walk leg movement
+  if(animState==='walk') {
+    const legSwing = Math.sin(frameCount*0.3)*4;
+    ctx.fillStyle='#2d0f45';
+    ctx.fillRect(-6, PH/2-12+legSwing, 5, 10);
+    ctx.fillRect(1, PH/2-12-legSwing, 5, 10);
+  } else {
+    ctx.fillStyle='#2d0f45';
+    ctx.fillRect(-6, PH/2-12, 5, 10);
+    ctx.fillRect(1, PH/2-12, 5, 10);
+  }
+
+  // Low HP pulse
+  if(hp<=4) {
+    ctx.strokeStyle='rgba(255,40,70,'+(0.4+Math.sin(frameCount*0.15)*0.4)+')';
+    ctx.lineWidth=1.5; ctx.strokeRect(-10,-PH/2-2,20,PH+4);
+  }
+
+  ctx.restore();
+
+  // Name tag
+  ctx.save();
+  ctx.fillStyle='rgba(232,48,90,0.75)';
+  ctx.font='bold 8px Uncial Antiqua,serif'; ctx.textAlign='center';
+  ctx.fillText('A.R.N.O.B', x+PW/2, y-18+offY);
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.font='9px IM Fell English,serif';
+  ctx.fillText(hp+'/'+ARNOB_MAX_HP, x+PW/2, y-9+offY);
+  ctx.restore();
 }
 
-function resetGame() {
-    document.getElementById('game-overlay').classList.remove('show');
-    init();
-    isRunning = true;
-    requestAnimationFrame(gameLoop);
+function drawTasmim(p) {
+  const {x,y,facing,animState,animFrame,hp} = p;
+  ctx.save();
+
+  let offY=0;
+  if(animState==='idle') offY=Math.sin(frameCount*0.07+1)*1.2;
+
+  ctx.translate(x+PW/2, y+PH/2+offY);
+  if(facing<0) ctx.scale(-1,1);
+
+  // Shadow
+  ctx.globalAlpha=0.2;
+  ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(0,PH/2+2,12,4,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // Aura glow
+  const aura=ctx.createRadialGradient(0,0,0,0,0,20);
+  aura.addColorStop(0,'rgba(240,112,144,0.15)'); aura.addColorStop(1,'rgba(240,112,144,0)');
+  ctx.fillStyle=aura; ctx.beginPath(); ctx.arc(0,0,20,0,Math.PI*2); ctx.fill();
+
+  // Dress/body
+  ctx.fillStyle='#c5a0e8';
+  ctx.fillRect(-8,-PH/2+14,16,16);
+  // Skirt flare
+  const skirtFlare = animState==='walk' ? Math.sin(frameCount*0.3)*2 : 0;
+  ctx.fillStyle='#9060c0';
+  ctx.beginPath(); ctx.moveTo(-10,PH/2-10); ctx.lineTo(0,PH/2-14+skirtFlare); ctx.lineTo(10,PH/2-10); ctx.closePath(); ctx.fill();
+  ctx.fillRect(-10,PH/2-10,20,8);
+
+  // Head
+  ctx.fillStyle='#f0d8f8';
+  ctx.fillRect(-7,-PH/2,14,13);
+  // Hair
+  ctx.fillStyle='#7040a0';
+  ctx.fillRect(-8,-PH/2-3,16,7);
+  ctx.fillRect(-10,-PH/2+1,3,14); // long side
+  ctx.fillRect(8,-PH/2+1,2,8);
+  // Star hair clip
+  ctx.fillStyle='#f0c060';
+  ctx.fillRect(3,-PH/2-1,2,2); ctx.fillRect(1,-PH/2+1,6,2); ctx.fillRect(3,-PH/2+3,2,2);
+  // Eyes
+  ctx.fillStyle='#5020a0';
+  ctx.shadowColor='#9060e0'; ctx.shadowBlur=4;
+  ctx.fillRect(-5,-PH/2+4,3,2);
+  ctx.fillRect(2,-PH/2+4,3,2);
+  ctx.shadowBlur=0;
+  // Blush
+  ctx.fillStyle='rgba(220,150,200,0.4)';
+  ctx.fillRect(-7,-PH/2+7,3,2); ctx.fillRect(4,-PH/2+7,3,2);
+
+  // Gun arm
+  const gunY = p.shootFlash>0 ? -PH/2+14 : -PH/2+16;
+  ctx.fillStyle='#4a3060';
+  ctx.fillRect(8, gunY, 14, 5);
+  ctx.fillRect(20, gunY-3, 3, 10);
+  ctx.fillStyle='#6a5080';
+  ctx.fillRect(8, gunY, 6, 6);
+  // Muzzle flash
+  if(p.shootFlash>0) {
+    ctx.fillStyle='rgba(220,180,255,0.9)';
+    ctx.beginPath(); ctx.arc(24,gunY+2,5,0,Math.PI*2); ctx.fill();
+  }
+
+  // Walk legs
+  if(animState==='walk') {
+    const ls=Math.sin(frameCount*0.3)*5;
+    ctx.fillStyle='#9060c0';
+    ctx.fillRect(-5,PH/2-2+ls,4,10);
+    ctx.fillRect(1,PH/2-2-ls,4,10);
+  } else {
+    ctx.fillStyle='#9060c0';
+    ctx.fillRect(-5,PH/2-2,4,10); ctx.fillRect(1,PH/2-2,4,10);
+  }
+
+  // Jump: cape flare
+  if(animState==='jump'||animState==='fall') {
+    ctx.globalAlpha=0.4;
+    ctx.fillStyle='#c5a0e8';
+    ctx.beginPath(); ctx.moveTo(-8,-PH/2+18); ctx.lineTo(-16,-PH/2+30); ctx.lineTo(-8,PH/2-10); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // Invincible blink
+  if(p.invincible>0 && Math.floor(frameCount/3)%2===0) ctx.globalAlpha=0.4;
+
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle='rgba(180,140,220,0.75)';
+  ctx.font='bold 8px Uncial Antiqua,serif'; ctx.textAlign='center';
+  ctx.fillText('T.A.S.M.I.M', x+PW/2, y-18+offY);
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.font='9px IM Fell English,serif';
+  ctx.fillText(hp+'/'+TASMIM_MAX_HP, x+PW/2, y-9+offY);
+  ctx.restore();
 }
+
+// =====================================================================
+//  TITLE SCREEN idle render continues until game starts
+// =====================================================================
 </script>
 </body>
 </html>
